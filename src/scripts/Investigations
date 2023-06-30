@@ -1,0 +1,62 @@
+
+SELECT * FROM targets WHERE description = 'Enceladus';
+
+SELECT
+  targets.description AS target
+, event_types.description AS event
+, time_stamp
+, title
+FROM
+  events
+  INNER JOIN targets ON target_id = targets.id AND targets.description = 'Enceladus'
+  LEFT JOIN event_types ON event_type_id=event_types.id
+WHERE 
+  title ILIKE '%flyby%' OR title ILIKE '%fly by%'
+ORDER BY time_stamp;
+
+
+SELECT
+  target
+, title
+, date 
+FROM
+  import.master_plan 
+WHERE
+  start_time_utc::date = '2005-02-17' 
+ORDER BY
+  start_time_utc;
+
+
+SELECT
+  targets.description AS target
+, events.time_stamp
+, event_types.description AS event
+FROM
+  events
+  INNER JOIN event_types ON event_type_id = event_types.id
+  INNER JOIN targets ON target_id = targets.id AND targets.description = 'Enceladus'
+WHERE
+  events.time_stamp::date = '2005-02-17'
+ORDER BY
+  events.time_stamp;
+
+
+-- Enceladus Events view
+DROP VIEW IF EXISTS enceladus_events;
+CREATE VIEW enceladus_events AS
+SELECT
+  events.id
+, events.time_stamp::date as date
+, events.time_stamp::time as time
+, event_types.description AS event
+, events.title
+, events.description
+FROM
+  events
+  INNER JOIN event_types ON event_type_id = event_types.id
+  INNER JOIN targets ON target_id = targets.id AND targets.description = 'Enceladus'
+ORDER BY
+  events.time_stamp;
+
+
+select * from enceladus_events where date = '2005-02-17'
